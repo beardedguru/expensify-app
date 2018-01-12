@@ -4,17 +4,17 @@ const webpack = require("webpack");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CSSExtract = new ExtractTextPlugin("styles.css");
 
-proccess.env.NODE_ENV = process.env.NODE_ENV || "development";
+process.env.NODE_ENV = process.env.NODE_ENV || "development";
 
 if (process.env.NODE_ENV === "test") {
   require("dotenv").config({ path: ".env.test" });
 } else if (process.env.NODE_ENV === "development") {
   require("dotenv").config({ path: ".env.development" });
 }
-// process.env.NODE_ENV
 
 module.exports = env => {
   const isProduction = env === "production";
+  const CSSExtract = new ExtractTextPlugin("styles.css");
 
   return {
     entry: "./src/app.js",
@@ -68,8 +68,8 @@ module.exports = env => {
         "process.env.FIREBASE_STORAGE_BUCKET": JSON.stringify(
           process.env.FIREBASE_STORAGE_BUCKET
         ),
-        "process.env.FIREBASE_MESSENGING_SENDER_ID": JSON.stringify(
-          process.env.FIREBASE_MESSENGING_SENDER_ID
+        "process.env.FIREBASE_MESSAGING_SENDER_ID": JSON.stringify(
+          process.env.FIREBASE_MESSAGING_SENDER_ID
         )
       })
     ],
