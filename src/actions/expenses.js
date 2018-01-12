@@ -1,86 +1,63 @@
-import uuid from "uuid";
-import database from "../firebase/firebase";
+import uuid from 'uuid';
+import database from '../firebase/firebase';
 
-// ADD_EXPENSE action generator
-export const addExpense = expense => ({
-  type: "ADD_EXPENSE",
+// ADD_EXPENSE
+export const addExpense = (expense) => ({
+  type: 'ADD_EXPENSE',
   expense
 });
 
-export const startAddExpense = expenseData => {
-  return dispatch => {
+export const startAddExpense = (expenseData = {}) => {
+  return (dispatch) => {
     const {
-      description = "",
-      note = "",
+      description = '',
+      note = '',
       amount = 0,
       createdAt = 0
     } = expenseData;
-    const expense = {
-      description,
-      note,
-      amount,
-      createdAt
-    };
-    return database
-      .ref("expenses")
-      .push(expense)
-      .then(ref => {
-        dispatch(
-          addExpense({
-            id: ref.key,
-            ...expense
-          })
-        );
-      });
+    const expense = { description, note, amount, createdAt };
+
+    return database.ref('expenses').push(expense).then((ref) => {
+      dispatch(addExpense({
+        id: ref.key,
+        ...expense
+      }));
+    });
   };
 };
 
 // REMOVE_EXPENSE
 export const removeExpense = ({ id } = {}) => ({
-  type: "REMOVE_EXPENSE",
+  type: 'REMOVE_EXPENSE',
   id
 });
 
 // EDIT_EXPENSE
 export const editExpense = (id, updates) => ({
-  type: "EDIT_EXPENSE",
+  type: 'EDIT_EXPENSE',
   id,
   updates
 });
 
-// [
-//   { amount: 195, createdAt: 0, description: "Gum", id: "1", note: "" },
-//   {
-//     amount: 109500,
-//     createdAt: -345600000,
-//     description: "Rent",
-//     id: "2",
-//     note: ""
-//   },
-//   {
-//     amount: 4500,
-//     createdAt: 345600000,
-//     description: "Credit Card",
-//     id: "3",
-//     note: ""
-//   },
-//   undefined
-// ];
+// SET_EXPENSES
+export const setExpenses = (expenses) => ({
+  type: 'SET_EXPENSES',
+  expenses
+});
 
-// [
-//   { amount: 195, createdAt: 0, description: "Gum", id: "1", note: "" },
-//   {
-//     amount: 109500,
-//     createdAt: -345600000,
-//     description: "Rent",
-//     id: "2",
-//     note: ""
-//   },
-//   {
-//     amount: 4500,
-//     createdAt: 345600000,
-//     description: "Credit Card",
-//     id: "3",
-//     note: ""
-//   }
-// ];
+export const startSetExpenses = () => {
+  return (dispatch) => {
+    return database.ref('expenses').once('value').then((snapshot) => {
+      const expenses = [];
+
+      snapshot.forEach((childSnapshot) => {
+        expenses.push({
+          id: childSnapshot.key,
+          ...childSnapshot.val()
+        });
+      });
+
+      dispatch(setExpenses(expenses));
+    });
+  };
+};
